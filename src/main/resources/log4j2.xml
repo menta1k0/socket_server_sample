@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration>
+
+<!-- Log4J2自身のログ設定 -->
+<Configuration status="OFF">
+
+    <!-- 共通設定 -->
+    <Properties>
+        <Property name="ptn">%d{yyyy-MM-dd_HH:mm:ss.SSS} [%t] =%-5level= %logger{36} - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 標準出力 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${ptn}"/>
+        </Console>
+
+        <!-- ファイル出力（ローテート設定あり） -->
+        <RollingFile name="file" fileName="${sys:socket_server.log_dir:-log}/${sys:socket_server.log_name:-socket_server.log}" filePattern="${sys:socket_server.log_dir:-log}/${sys:socket_server.log_name:-socket_server.log}_%d{yyyyMMdd}_%i">
+            <PatternLayout pattern="${ptn}" />
+            <Policies>
+                <OnStartupTriggeringPolicy />                 <!-- VM起動ごとにローテート -->
+                <SizeBasedTriggeringPolicy size="20 MB" />    <!-- 指定サイズでローテート -->
+            </Policies>
+            <DefaultRolloverStrategy max="10" />
+        </RollingFile>
+
+    </Appenders>
+
+    <!-- ログレベル：DEBUG/TRACE/INFO/WARN/ERROR -->
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="aj" level="info">
+            <AppenderRef ref="file" />
+        </Logger>
+    </Loggers>
+
+</Configuration>
